@@ -170,11 +170,15 @@ redmine_finalize_database_parameters() {
       DB_ENCODING=${DB_ENCODING:-unicode}
       DB_PORT=${DB_PORT:-5432}
       ;;
+    sqlserver)
+      #DB_ENCODING=${DB_ENCODING:-unicode}
+      DB_PORT=${DB_PORT:-1433}
+      ;;
     *)
       echo
       echo "ERROR: "
       echo "  Please specify the database type in use via the DB_ADAPTER configuration option."
-      echo "  Accepted values are \"postgresql\" or \"mysql2\". Aborting..."
+      echo "  Accepted values are \"postgresql\" or \"mysql2\" or \"sqlserver\""". Aborting..."
       echo
       return 1
       ;;
@@ -194,6 +198,8 @@ redmine_check_database_connection() {
       prog=$(find /usr/lib/postgresql/ -name pg_isready)
       prog="${prog} -h ${DB_HOST} -p ${DB_PORT} -U ${DB_USER} -d ${DB_NAME} -t 1"
       ;;
+    sqlserver)
+      return 0
   esac
   timeout=60
   while ! ${prog} >/dev/null 2>&1

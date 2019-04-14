@@ -44,20 +44,26 @@ else
   exec_as_redmine rm -rf /tmp/redmine-${REDMINE_VERSION}.tar.gz
 fi
 
-# HACK: we want both the pg and mysql2 gems installed, so we remove the
+# HACK: we want both the pg, mysql2 and sqlserver gems installed, so we remove the
 #       respective lines and add them at the end of the Gemfile so that they
 #       are both installed.
 PG_GEM=$(grep 'gem "pg"' ${REDMINE_INSTALL_DIR}/Gemfile | awk '{gsub(/^[ \t]+|[ \t]+$/,""); print;}')
 MYSQL2_GEM=$(grep 'gem "mysql2"' ${REDMINE_INSTALL_DIR}/Gemfile | awk '{gsub(/^[ \t]+|[ \t]+$/,""); print;}')
+TINY_TDS_GEM=$(grep 'gem "tiny_tds"' ${REDMINE_INSTALL_DIR}/Gemfile | awk '{gsub(/^[ \t]+|[ \t]+$/,""); print;}')
+AR_SQLSERVER_GEM=$(grep 'gem "activerecord-sqlserver-adapter"' ${REDMINE_INSTALL_DIR}/Gemfile | awk '{gsub(/^[ \t]+|[ \t]+$/,""); print;}')
 
 sed -i \
   -e '/gem "pg"/d' \
   -e '/gem "mysql2"/d' \
+  -e '/gem "tiny_tds"/d' \
+  -e '/gem "activerecord-sqlserver-adapter"/d' \
   ${REDMINE_INSTALL_DIR}/Gemfile
 
 (
   echo "${PG_GEM}";
   echo "${MYSQL2_GEM}";
+  echo "${TINY_TDS_GEM}";
+  echo "${AR_SQLSERVER_GEM}";
   echo '# unicorn 5.5.0 has a bug in unicorn_rails. See issue #392';
   echo 'gem "unicorn", "~> 5.4", "!=5.5.0"';
   echo 'gem "dalli", "~> 2.7.0"';
